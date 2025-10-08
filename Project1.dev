@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;12;0;0;0
-UnitCount=1
+UnitCount=9
 
 [VersionInfo]
 Major=1
@@ -51,9 +51,9 @@ AutoIncBuildNr=0
 SyncProduct=1
 
 [Unit2]
-FileName=Student.h
+FileName=View\StudentView.c
 CompileCpp=0
-Folder=Model
+Folder=View
 Compile=1
 Link=1
 Priority=1000
@@ -61,9 +61,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=Score.h
+FileName=View\StudentView.h
 CompileCpp=0
-Folder=Model
+Folder=View
 Compile=1
 Link=1
 Priority=1000
@@ -71,7 +71,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=Subject.h
+FileName=Model\Major.h
 CompileCpp=0
 Folder=Model
 Compile=1
@@ -81,7 +81,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=Major.h
+FileName=Model\Score.h
 CompileCpp=0
 Folder=Model
 Compile=1
@@ -91,9 +91,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=StudentView.h
+FileName=Model\Student.h
 CompileCpp=0
-Folder=View
+Folder=Model
 Compile=1
 Link=1
 Priority=1000
@@ -101,9 +101,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=StudentView.c
+FileName=Model\Subject.h
 CompileCpp=0
-Folder=View
+Folder=Model
 Compile=1
 Link=1
 Priority=1000
@@ -111,7 +111,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=StudentController.h
+FileName=Controller\StudentController.c
 CompileCpp=0
 Folder=Controller
 Compile=1
@@ -121,7 +121,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=StudentController.c
+FileName=Controller\StudentController.h
 CompileCpp=0
 Folder=Controller
 Compile=1
