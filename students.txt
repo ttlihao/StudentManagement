@@ -1,0 +1,1 @@
+a|thien|2003|12|20|SE|Software Engineering|10.00|BS,Bussiness Scope,10.00;FE,Frontend Engineering,10.00
