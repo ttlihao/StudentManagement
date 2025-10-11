@@ -10,6 +10,17 @@ struct Student students[MAX_VIEWS];
 struct StudentView views[MAX_VIEWS];
 int viewCount = 0;
 static int nextStudentID = 1; 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <strings.h> // For strcasecmp()
+#include "StudentController.h"
+#include "MajorController.h"
+#include "SubjectController.h"
+#include "../Extensions/InputHelper.h"
+
+#define PAGE_SIZE 5
+
 static void displayPaginatedViews(struct StudentView viewsToShow[], int count) {
     if (count == 0) {
         printf("No students to display.\n");
@@ -22,7 +33,7 @@ static void displayPaginatedViews(struct StudentView viewsToShow[], int count) {
 
     while (1) {
         system("cls"); // Use "clear" for Linux/macOS
-        printf("\n--- Student List (Page %d of %d) ---\n\n", currentPage, totalPages);
+        printf("\n--- Student List (Page %d of %d | Total: %d students) ---\n\n", currentPage, totalPages, count);
 
         int startIndex = (currentPage - 1) * PAGE_SIZE;
         int endIndex = startIndex + PAGE_SIZE;
@@ -35,18 +46,25 @@ static void displayPaginatedViews(struct StudentView viewsToShow[], int count) {
             printf("------------------------------------\n");
         }
 
-        printf("\n[N]ext Page | [P]revious Page | [Q]uit to Menu\n");
+        // Updated navigation menu with the "Jump" option
+        printf("\n[N]ext | [P]rev | [J]ump to Page | [Q]uit to Menu\n");
         getOptionalString("Enter navigation choice: ", navInput, sizeof(navInput));
 
         if (strcasecmp(navInput, "n") == 0) {
             if (currentPage < totalPages) currentPage++;
         } else if (strcasecmp(navInput, "p") == 0) {
             if (currentPage > 1) currentPage--;
+        } else if (strcasecmp(navInput, "j") == 0) {
+            // New logic to handle jumping to a specific page
+            // We reuse our robust getInt helper for validated input!
+            int pageToJump = getInt("Enter page number to jump to: ", 1, totalPages);
+            currentPage = pageToJump;
         } else if (strcasecmp(navInput, "q") == 0) {
             break; // Exit the pagination loop
         }
     }
 }
+
 
 void updateNextStudentID() {
     if (viewCount == 0) {

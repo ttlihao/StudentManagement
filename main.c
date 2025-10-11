@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h> // Required for system("cls") or system("clear")
+#include <string.h>
 #include "Controller/StudentController.h"
 #include "Controller/MajorController.h"
 #include "Controller/SubjectController.h"
