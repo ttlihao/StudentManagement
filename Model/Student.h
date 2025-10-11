@@ -10,6 +10,7 @@ struct Student {
     int birthYear;
     int birthDay;
     int birthMonth;
+    char gender[10]; 
     struct Major major;
     float gpa;
     struct Score scores[10];
