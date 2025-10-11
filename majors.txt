@@ -1,0 +1,13 @@
+SE|Software Engineering
+CS|Computer Science
+GD|Graphic Design
+MKT|Marketing
+FIN|Finance
+ACC|Accounting
+CE|Civil Engineering
+NUR|Nursing
+ME|Mechanical Engineering
+ENG|English Literature
+PSY|Psychology
+EE|Electrical Engineering
+IB|International Business

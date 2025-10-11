@@ -4,8 +4,8 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = main.o View/StudentView.o Controller/StudentController.o
-LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o
+OBJ      = main.o View/StudentView.o Controller/StudentController.o Controller/MajorController.o Controller/SubjectController.o Extensions/InputHelper.o
+LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o Controller/MajorController.o Controller/SubjectController.o Extensions/InputHelper.o
 LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -g3
 INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
 CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"
@@ -32,3 +32,12 @@ View/StudentView.o: View/StudentView.c
 
 Controller/StudentController.o: Controller/StudentController.c
 	$(CC) -c Controller/StudentController.c -o Controller/StudentController.o $(CFLAGS)
+
+Controller/MajorController.o: Controller/MajorController.c
+	$(CC) -c Controller/MajorController.c -o Controller/MajorController.o $(CFLAGS)
+
+Controller/SubjectController.o: Controller/SubjectController.c
+	$(CC) -c Controller/SubjectController.c -o Controller/SubjectController.o $(CFLAGS)
+
+Extensions/InputHelper.o: Extensions/InputHelper.c
+	$(CC) -c Extensions/InputHelper.c -o Extensions/InputHelper.o $(CFLAGS)
