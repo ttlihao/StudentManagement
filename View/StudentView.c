@@ -8,8 +8,8 @@ void displayStudentView(struct StudentView view) {
     printf("Name  : %s\n", s->name);
     printf("Major : %s (%s)\n", s->major.name, s->major.code);
     printf("GPA   : %.2f\n", s->gpa);
-
-    for (int i = 0; i < s->scoreCount; i++) {
+int i;
+    for ( i = 0; i < s->scoreCount; i++) {
         printf("  %s: %.2f\n", s->scores[i].subject.code, s->scores[i].value);
     }
 }

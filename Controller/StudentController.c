@@ -18,7 +18,8 @@ void addStudentView() {
     printf("Enter GPA: "); scanf("%f", &s.gpa);
 
     printf("How many subjects? "); scanf("%d", &s.scoreCount);
-    for (int i = 0; i < s.scoreCount; i++) {
+    int i ; 
+    for ( i = 0; i < s.scoreCount; i++) {
         printf("Subject #%d Code: ", i + 1); scanf("%s", s.scores[i].subject.code);
         printf("Subject #%d Name: ", i + 1); getchar(); fgets(s.scores[i].subject.name, 50, stdin); s.scores[i].subject.name[strcspn(s.scores[i].subject.name, "\n")] = '\0';
         printf("Score: "); scanf("%f", &s.scores[i].value);
@@ -37,11 +38,12 @@ void saveStudentViewsToFile(const char* filename) {
         printf("Error opening file for writing.\n");
         return;
     }
-
-    for (int i = 0; i < viewCount; i++) {
+    int i; 
+    int j ;
+    for ( i = 0; i < viewCount; i++) {
         struct Student* s = views[i].student;
         fprintf(file, "%s|%s|%d|%d|%d|%s|%s|%.2f|", s->id, s->name, s->birthYear, s->birthMonth, s->birthDay, s->major.code, s->major.name, s->gpa);
-        for (int j = 0; j < s->scoreCount; j++) {
+        for ( j = 0; j < s->scoreCount; j++) {
             fprintf(file, "%s,%s,%.2f", s->scores[j].subject.code, s->scores[j].subject.name, s->scores[j].value);
             if (j < s->scoreCount - 1) fprintf(file, ";");
         }
@@ -97,8 +99,8 @@ void displayAllStudentViews() {
         printf("No students to display.\n");
         return;
     }
-
-    for (int i = 0; i < viewCount; i++) {
+    int i;
+    for ( i = 0; i < viewCount; i++) {
         displayStudentView(views[i]);
     }
 }
@@ -113,8 +115,8 @@ void filterAndSortStudentViews(
 ) {
     struct StudentView matched[MAX_VIEWS];
     int matchedCount = 0;
-
-    for (int i = 0; i < viewCount; i++) {
+    int i ;
+    for ( i = 0; i < viewCount; i++) {
         struct Student* s = views[i].student;
 
         if (idKeyword && strlen(idKeyword) > 0 && !strstr(s->id, idKeyword)) continue;
@@ -130,9 +132,9 @@ void filterAndSortStudentViews(
         printf("No matching students found.\n");
         return;
     }
-
-    for (int i = 0; i < matchedCount - 1; i++) {
-        for (int j = i + 1; j < matchedCount; j++) {
+    int j ; 
+    for ( i = 0; i < matchedCount - 1; i++) {
+        for (j = i + 1; j < matchedCount; j++) {
             int shouldSwap = 0;
 
             if (sortByField && strcmp(sortByField, "gpa") == 0) {
@@ -152,7 +154,7 @@ void filterAndSortStudentViews(
     }
 
     printf("\nFiltered and Sorted Students:\n");
-    for (int i = 0; i < matchedCount; i++) {
+    for ( i = 0; i < matchedCount; i++) {
         displayStudentView(matched[i]);
     }
 }
