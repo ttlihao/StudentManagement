@@ -307,3 +307,6 @@ void filterAndSortStudentViews(
     
     displayPaginatedViews(matched, matchedCount);
 }
+void deleteStudent(const char* idKeyword){ 
+
+}
