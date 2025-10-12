@@ -307,6 +307,54 @@ void filterAndSortStudentViews(
     
     displayPaginatedViews(matched, matchedCount);
 }
-void deleteStudent(const char* idKeyword){ 
+void deleteStudentView() {
+    if (viewCount == 0) {
+        printf(" No students available to delete.\n");
+        return;
+    }
 
+    char idToDelete[20];
+    getString("Enter Student ID to delete (e.g., SV0001): ", idToDelete, sizeof(idToDelete));
+
+    int foundIndex = -1;
+    for (int i = 0; i < viewCount; i++) {
+        if (strcmp(students[i].id, idToDelete) == 0) {
+            foundIndex = i;
+            break;
+        }
+    }
+
+    if (foundIndex == -1) {
+        printf("Error: Student ID not found.\n");
+        return;
+    }
+
+    printf("\nStudent found:\n");
+    printf("ID: %s | Name: %s | GPA: %.2f | Major: %s\n",
+           students[foundIndex].id,
+           students[foundIndex].name,
+           students[foundIndex].gpa,
+           students[foundIndex].major.name);
+
+    char confirm[10];
+    getOptionalString("Are you sure you want to delete this student? (Y/N): ", confirm, sizeof(confirm));
+
+    if (strcasecmp(confirm, "y") != 0 && strcasecmp(confirm, "yes") != 0) {
+        printf(" Delete operation cancelled by user.\n");
+        return;
+    }
+
+    for (int i = foundIndex; i < viewCount - 1; i++) {
+        students[i] = students[i + 1];
+        views[i] = views[i + 1];
+    }
+
+    viewCount--;
+
+    saveStudentViewsToFile("students.txt");
+
+    printf("Student deleted successfully and file updated.\n");
 }
+
+
+

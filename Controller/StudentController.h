@@ -14,6 +14,7 @@ void addStudentView();
 void saveStudentViewsToFile(const char* filename);
 void loadStudentViewsFromFile(const char* filename);
 void displayAllStudentViews();
+void deleteStudentView();
 void filterAndSortStudentViews(
     const char* idKeyword,
     const char* nameKeyword,

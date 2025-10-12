@@ -15,7 +15,8 @@ void displayMenu() {
     printf("1. Add New Student\n");
     printf("2. Display All Students\n");
     printf("3. Filter & Sort Students\n");
-    printf("4. Exit\n");
+    printf("4. Delete Student\n");
+    printf("5. Exit\n");
     printf("------------------------------------\n");
 }
 
@@ -86,7 +87,7 @@ int main() {
     int choice;
     while (1) {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 4);
+        choice = getInt("Enter your choice: ", 1, 5);
 
         switch (choice) {
             case 1: // Add New Student
@@ -112,8 +113,13 @@ int main() {
                 printf("\nPress Enter to return to the menu...");
                 getchar();
                 break;
-
-            case 4: // Exit
+             case 4: //  Delete Student
+             	deleteStudentView();
+                saveStudentViewsToFile("students.txt"); // ✅ Auto-save after delete  
+                printf("\nPress Enter to return to the menu...");
+                getchar();
+                break;
+            case 5: // Exit
                 printf("\nExiting program. Goodbye!\n");
                 return 0; // Terminate the program
 
