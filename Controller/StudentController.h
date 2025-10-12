@@ -24,5 +24,6 @@ void filterAndSortStudentViews(
     const char* sortByField,
     int sortOrder
 );
+void deleteStudent(const char* idKeyword);
 
 #endif
