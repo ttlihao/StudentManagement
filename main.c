@@ -1,12 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h> // Required for system("cls") or system("clear")
+#include <stdlib.h>
 #include <string.h>
 #include "Controller/StudentController.h"
 #include "Controller/MajorController.h"
 #include "Controller/SubjectController.h"
 #include "Extensions/InputHelper.h"
+#include "Controller/DashboardController.h"
 
-// Function to display the main menu to the user
 void displayMenu() {
     system("cls"); // Use "clear" for Linux/macOS, "cls" for Windows
     printf("====================================\n");
@@ -17,12 +17,11 @@ void displayMenu() {
     printf("3. Filter & Sort Students\n");
     printf("4. Delete Student\n");
     printf("5. Edit Student Info\n");
-    printf("6. Exit\n");
+    printf("6. Dashboard\n");
+    printf("7. Exit\n");
     printf("------------------------------------\n");
 }
 
-// Helper function to get input for filtering and sorting
-// Helper function to get input for filtering and sorting
 // Helper function to get input for filtering and sorting
 void handleFilterSortInput() {
     char idKeyword[15] = "";
@@ -88,7 +87,7 @@ int main() {
     int choice;
     while (1) {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 6);
+        choice = getInt("Enter your choice: ", 1, 7);
 
         switch (choice) {
             case 1: // Add New Student
@@ -125,7 +124,12 @@ int main() {
                 printf("\nPress Enter to return to the menu...");
                 getchar();
                 break;
-			case 6: // Exit
+            case 6: 
+                showStatisticsReport();
+                printf("\nPress Enter to return to the menu...");
+                getchar();
+                break;    
+			case 7: // Exit
                 printf("\nExiting program. Goodbye!\n");
                 return 0; // Terminate the program
 
