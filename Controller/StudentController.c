@@ -147,7 +147,7 @@ void addStudentView() {
     viewCount++;
     nextStudentID++; // Increment for the next student
 
-    printf("\n✅ Student added successfully!\n");
+    printf("\nStudent added successfully!\n");
 }
 
 
