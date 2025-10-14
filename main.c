@@ -88,7 +88,7 @@ int main() {
     int choice;
     while (1) {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 5);
+        choice = getInt("Enter your choice: ", 1, 6);
 
         switch (choice) {
             case 1: // Add New Student
