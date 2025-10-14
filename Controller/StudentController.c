@@ -355,6 +355,133 @@ void deleteStudentView() {
 
     printf("Student deleted successfully and file updated.\n");
 }
+void editStudentInfo()
+{
+    // Step 1: Check if there are any students in the list
+    if (viewCount == 0) {
+        printf("There are no students to edit.\n");
+        return;
+    }
 
+    // Step 2: Prompt the user to enter the ID of the student to edit
+    char idToEdit[20];
+    getString("Enter Student ID to edit (e.g., SV0001): ", idToEdit, sizeof(idToEdit));
 
+    // Step 3: Find the index of the student in the `students` array
+    int foundIndex = -1;
+    for (int i = 0; i < viewCount; i++) {
+        // Compare the input ID with each student's ID
+        if (strcmp(students[i].id, idToEdit) == 0) {
+            foundIndex = i;
+            break; // Found, break the loop
+        }
+    }
 
+    // Step 4: Handle the case where the student is not found
+    if (foundIndex == -1) {
+        printf("Error: Student with ID '%s' not found.\n", idToEdit);
+        return;
+    }
+
+    // Create a pointer `s` for easier access to the student's information
+    struct Student* s = &students[foundIndex];
+    int choice;
+    int changesMade = 0; // Flag to check if any changes were made
+
+    // Step 5: Display the edit menu in a `while` loop
+    while (1) {
+        system("cls"); // Clear the screen for a clean menu display
+        printf("\n--- Editing Student Information: %s ---\n", s->name);
+        printf("ID: %s (Cannot be changed)\n", s->id);
+        printf("---------------------------------------------\n");
+        // List all editable information from Student.h
+        printf("1. Full Name      : %s\n", s->name);
+        printf("2. Gender         : %s\n", s->gender);
+        printf("3. Date of Birth  : %d-%02d-%02d\n", s->birthYear, s->birthMonth, s->birthDay);
+        printf("4. Major          : %s (%s)\n", s->major.name, s->major.code);
+        printf("5. Scores         : (%d subjects)\n", s->scoreCount);
+        printf("---------------------------------------------\n");
+        printf("0. Save Changes and Exit\n");
+        printf("---------------------------------------------\n");
+
+        choice = getInt("Select the information you want to edit: ", 0, 5);
+
+        // If the user selects 0, break the loop
+        if (choice == 0) {
+            break;
+        }
+
+        changesMade = 1; // Mark that a change has been made
+
+        // Use `switch` to handle the user's choice
+        switch (choice) {
+            case 1: // Edit Full Name
+                printf("Current name: %s\n", s->name);
+                getString("Enter new name: ", s->name, sizeof(s->name));
+                printf("=> Name updated successfully!\n");
+                break;
+            
+            case 2: // Edit Gender
+                printf("Current gender: %s\n", s->gender);
+                getGender("Enter new gender", s->gender, sizeof(s->gender));
+                printf("=> Gender updated successfully!\n");
+                break;
+
+            case 3: // Edit Date of Birth
+                printf("Current date of birth: %d-%02d-%02d\n", s->birthYear, s->birthMonth, s->birthDay);
+                getDate("Enter new date of birth", &s->birthYear, &s->birthMonth, &s->birthDay);
+                printf("=> Date of birth updated successfully!\n");
+                break;
+
+            case 4: // Edit Major
+                printf("Current major: %s\n", s->major.name);
+                printf("\n--- Select a new major ---\n");
+                // Display the list of available majors
+                for (int i = 0; i < majorCount; i++) {
+                    printf("  %d. %s (%s)\n", i + 1, majors[i].name, majors[i].code);
+                }
+                int majorChoice = getInt("Enter your choice: ", 1, majorCount);
+                s->major = majors[majorChoice - 1]; // Update the major
+                printf("=> Major updated successfully!\n");
+                break;
+
+            case 5: // Edit Scores
+                printf("\n--- Re-enter all scores ---\n");
+                // Request re-entry of all scores to ensure consistency
+                s->scoreCount = getInt("How many subjects do you want to enter scores for? ", 0, 10);
+
+                for (int i = 0; i < s->scoreCount; i++) {
+                    printf("\n--- Subject #%d ---\n", i + 1);
+                    // Display the list of subjects
+                    for (int j = 0; j < subjectCount; j++) {
+                        printf("  %d. %s (%s)\n", j + 1, subjects[j].name, subjects[j].code);
+                    }
+                    int subjectChoice = getInt("Select a subject: ", 1, subjectCount);
+                    s->scores[i].subject = subjects[subjectChoice - 1];
+
+                    // Enter the score for the selected subject
+                    char prompt[100];
+                    sprintf(prompt, "Enter score for %s (0-10): ", s->scores[i].subject.code);
+                    s->scores[i].value = getFloat(prompt, 0.0, 10.0);
+                }
+                printf("=> Scores updated successfully!\n");
+                break;
+        }
+        printf("\nPress Enter to continue editing...");
+        getchar(); // Pause for the user to read the message
+    }
+
+    // Step 6: Process after exiting the edit menu
+    if (changesMade) {
+        // Recalculate GPA as scores might have changed
+        s->gpa = calculateGPA(s->scores, s->scoreCount);
+
+        // Save the entire student list (including the edited student) to the file
+        saveStudentViewsToFile("students.txt");
+
+        printf("\n=> Student information has been updated and saved to the file.\n");
+        printf("   The newly recalculated GPA is: %.2f\n", s->gpa);
+    } else {
+        printf("\n=> No changes were made.\n");
+    }
+}
