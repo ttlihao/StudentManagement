@@ -2,5 +2,5 @@
 #define DASHBOARD_CONTROLLER_H
 
 void showStatisticsReport();
-
+void exportDatabaseToHtml();
 #endif

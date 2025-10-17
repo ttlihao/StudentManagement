@@ -269,13 +269,6 @@ void displayAllStudentViews() {
     displayPaginatedViews(views, viewCount);
 }
 
-static int stricmp_portable(const char* s1, const char* s2) {
-    while (*s1 && (tolower((unsigned char)*s1) == tolower((unsigned char)*s2))) {
-        s1++;
-        s2++;
-    }
-    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
-}
 
 static const char* stristr(const char* str, const char* find) {
     if (!find || !*find) return str; // If 'find' is empty, it's always a match

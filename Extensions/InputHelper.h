@@ -21,4 +21,6 @@ void getDate(const char* prompt, int* year, int* month, int* day);
 
 void getGender(const char* prompt, char* buffer, int size);
 float getOptionalFloat(const char* prompt, float min, float max, float defaultValue); 
+void getHtmlFilePath(const char* prompt, char* buffer, int size);
+int stricmp_portable(const char* s1, const char* s2);
 #endif

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "InputHelper.h"
 
 void clearInputBuffer() {
@@ -146,4 +147,30 @@ float getOptionalFloat(const char* prompt, float min, float max, float defaultVa
             printf("Error: Invalid input. Please enter a number.\n");
         }
     }
+}
+int stricmp_portable(const char* s1, const char* s2) {
+    while (*s1 && (tolower((unsigned char)*s1) == tolower((unsigned char)*s2))) {
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+}
+void getHtmlFilePath(const char* prompt, char* buffer, int size) {
+    // 1. Get a non-empty string from the user first.
+    getString(prompt, buffer, size);
+
+    int len = strlen(buffer);
+
+    // 2. Check if the string already ends with ".html" (case-insensitive).
+    //    We only check if the length is sufficient.
+    if (len > 5 && stricmp_portable(buffer + len - 5, ".html") == 0) {
+        // The path is already valid, so we do nothing.
+        return;
+    }
+
+    // 3. If it doesn't end with .html, append it.
+    //    We use strncat for safety to prevent buffer overflows.
+    strncat(buffer, ".html", size - len - 1);
+
+    printf("  -> Notice: Appended '.html' extension to the filename.\n");
 }

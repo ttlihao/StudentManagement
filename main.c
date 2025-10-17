@@ -18,7 +18,8 @@ void displayMenu() {
     printf("4. Delete Student\n");
     printf("5. Edit Student Info\n");
     printf("6. Dashboard\n");
-    printf("7. Exit\n");
+	printf("7. Export Report to HTML File\n");
+    printf("8. Exit\n");
     printf("------------------------------------\n");
 }
 
@@ -85,7 +86,7 @@ int main() {
     int choice;
     while (1) {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 7);
+        choice = getInt("Enter your choice: ", 1, 8);
 
         switch (choice) {
             case 1: 
@@ -123,13 +124,17 @@ int main() {
                 showStatisticsReport();
                 printf("\nPress Enter to return to the menu...");
                 getchar();
-                break;    
-			case 7: // Exit
+                break;
+            case 7: 
+            	exportDatabaseToHtml(); 
+                printf("\nPress Enter to return to the menu...");
+                getchar();
+                break;
+			case 8: // Exit
                 printf("\nExiting program. Goodbye!\n");
                 return 0; // Terminate the program
 
             default:
-                // This case is unlikely due to the getInt validation, but is good practice.
                 printf("Invalid choice. Please try again.\n");
                 break;
         }
