@@ -13,12 +13,12 @@ void loadSubjectsFromFile(const char* filename) {
     }
 
     subjectCount = 0;
-    // File format: CODE|NAME|CREDITS
     while (subjectCount < MAX_SUBJECTS &&
-           fscanf(file, "%[^|]|%[^|]|%d\n",
+           fscanf(file, "%[^|]|%[^|]|%d|%[^\n]\n",
                   subjects[subjectCount].code,
                   subjects[subjectCount].name,
-                  &subjects[subjectCount].creditHours) == 3) {
+                  &subjects[subjectCount].creditHours,
+                  subjects[subjectCount].majorCode) == 4) { 
         subjectCount++;
     }
 

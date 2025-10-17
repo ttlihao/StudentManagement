@@ -60,21 +60,19 @@ void handleFilterSortInput() {
     }
 
     getOptionalString("\nSort by (id, name, or gpa): ", sortByField, sizeof(sortByField));
-    int sortOrder = 1; // Default to ascending (1)
-    if (strlen(sortByField) > 0) { // Only ask for order if a sort field was specified
+    int sortOrder = 1; 
+    if (strlen(sortByField) > 0) { 
         printf("  Sort Order (1-Ascending, 2-Descending): ");
         int orderChoice = getInt("", 1, 2);
         if (orderChoice == 2) {
-            sortOrder = -1; // Use -1 to represent descending
+            sortOrder = -1; 
         }
     }
-    // Call the function with the now-guaranteed valid GPA range.
     filterAndSortStudentViews(idKeyword, nameKeyword, majorCode, minGPA, maxGPA, sortByField, sortOrder);
 }
 
 int main() {
-    // 1. Initial Data Loading
-    // This block runs only once when the application starts.
+
     printf("Loading data from files...\n");
     loadMajorsFromFile("majors.txt");
     loadSubjectsFromFile("subjects.txt");
@@ -90,12 +88,9 @@ int main() {
         choice = getInt("Enter your choice: ", 1, 7);
 
         switch (choice) {
-            case 1: // Add New Student
+            case 1: 
                 printf("\n--- Add New Student ---\n");
-                addStudentView(); // Adds the student to the in-memory array
-
-                // 2. Auto-save the entire student list to the file
-                // This fulfills your requirement to persist data after every addition.
+                addStudentView();
                 saveStudentViewsToFile("students.txt");
 
                 printf("\nPress Enter to return to the menu...");
@@ -115,7 +110,7 @@ int main() {
                 break;
             case 4: //  Delete Student
              	deleteStudentView();
-                saveStudentViewsToFile("students.txt"); // ✅ Auto-save after delete  
+                saveStudentViewsToFile("students.txt");  
                 printf("\nPress Enter to return to the menu...");
                 getchar();
                 break;
