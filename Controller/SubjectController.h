@@ -8,6 +8,10 @@
 extern struct Subject subjects[MAX_SUBJECTS];
 extern int subjectCount;
 
+void addSubject();
+void displayAllSubject();
+void updateSubJect();
+void Delete();
 void loadSubjectsFromFile(const char* filename);
 int findSubjectIndex(const char* code);
 

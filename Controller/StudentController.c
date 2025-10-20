@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <strings.h>
 #include "StudentController.h"
 #include "MajorController.h"
 #include "SubjectController.h" 
@@ -10,14 +11,7 @@ struct Student students[MAX_VIEWS];
 struct StudentView views[MAX_VIEWS];
 int viewCount = 0;
 static int nextStudentID = 1; 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <strings.h> // For strcasecmp()
-#include "StudentController.h"
-#include "MajorController.h"
-#include "SubjectController.h"
-#include "../Extensions/InputHelper.h"
+
 
 #define PAGE_SIZE 5
 
@@ -307,54 +301,39 @@ void filterAndSortStudentViews(
     
     displayPaginatedViews(matched, matchedCount);
 }
-void deleteStudentView() {
-    if (viewCount == 0) {
-        printf(" No students available to delete.\n");
+  void deleteStudent() {
+    char id[20];
+    getString("Enter student ID to delete: ", id, sizeof(id));
+
+    int index = findStudentIndex(id);
+    if (index == -1) {
+        printf("Student with ID %s not found.\n", id);
         return;
     }
 
-    char idToDelete[20];
-    getString("Enter Student ID to delete (e.g., SV0001): ", idToDelete, sizeof(idToDelete));
-
-    int foundIndex = -1;
-    for (int i = 0; i < viewCount; i++) {
-        if (strcmp(students[i].id, idToDelete) == 0) {
-            foundIndex = i;
-            break;
-        }
-    }
-
-    if (foundIndex == -1) {
-        printf("Error: Student ID not found.\n");
-        return;
-    }
-
-    printf("\nStudent found:\n");
-    printf("ID: %s | Name: %s | GPA: %.2f | Major: %s\n",
-           students[foundIndex].id,
-           students[foundIndex].name,
-           students[foundIndex].gpa,
-           students[foundIndex].major.name);
-
-    char confirm[10];
-    getOptionalString("Are you sure you want to delete this student? (Y/N): ", confirm, sizeof(confirm));
-
-    if (strcasecmp(confirm, "y") != 0 && strcasecmp(confirm, "yes") != 0) {
-        printf(" Delete operation cancelled by user.\n");
-        return;
-    }
-
-    for (int i = foundIndex; i < viewCount - 1; i++) {
+    for (int i = index; i < viewCount - 1; i++) {
         students[i] = students[i + 1];
-        views[i] = views[i + 1];
+        views[i].student = &students[i]; 
     }
-
     viewCount--;
 
-    saveStudentViewsToFile("students.txt");
+    printf(" Student deleted successfully.\n");
 
-    printf("Student deleted successfully and file updated.\n");
+    saveStudentViewsToFile("students.txt"); 
+}
+
+ int findStudentIndex(const char* id) {
+    if (id == NULL || strlen(id) == 0) return -1;
+    for (int i = 0; i < viewCount; i++) {
+        if (strcmp(students[i].id, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 
 
+
+    
+    
