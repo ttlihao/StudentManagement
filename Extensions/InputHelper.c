@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "InputHelper.h"
 
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
-
 void getString(const char* prompt, char* buffer, int size) {
     while (1) {
         printf("%s", prompt);
         fgets(buffer, size, stdin);
-        buffer[strcspn(buffer, "\n")] = '\0'; // Remove trailing newline
+        buffer[strcspn(buffer, "\n")] = '\0';
         if (strlen(buffer) > 0) {
             break;
         }
@@ -22,7 +22,7 @@ void getString(const char* prompt, char* buffer, int size) {
 void getOptionalString(const char* prompt, char* buffer, int size) {
     printf("%s", prompt);
     fgets(buffer, size, stdin);
-    buffer[strcspn(buffer, "\n")] = '\0'; // Remove trailing newline
+    buffer[strcspn(buffer, "\n")] = '\0';
 }
 int getInt(const char* prompt, int min, int max) {
     int value;
@@ -50,6 +50,35 @@ float getFloat(const char* prompt, float min, float max) {
     }
 }
 
+static int isLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+static int isValidDate(int day, int month, int year, int currentYear) {
+    if (year < 1900 || year > currentYear || month < 1 || month > 12 || day < 1) {
+        return 0; 
+    }
+
+    if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+        return 0; 
+    }
+
+
+    if (month == 2) {
+        if (isLeapYear(year)) {
+            if (day > 29) return 0; 
+        } else {
+            if (day > 28) return 0; 
+        }
+    } else { 
+        if (day > 31) return 0;
+    }
+
+
+    return 1; 
+}
+
+
 void getDate(const char* prompt, int* year, int* month, int* day) {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -57,14 +86,15 @@ void getDate(const char* prompt, int* year, int* month, int* day) {
 
     printf("%s", prompt);
     while (1) {
-        printf("\nEnter Birth Year, Month, Day (YYYY MM DD): ");
-        if (scanf("%d %d %d", year, month, day) == 3) {
-            if (*year > 1900 && *year <= currentYear && *month >= 1 && *month <= 12 && *day >= 1 && *day <= 31) {
-                 clearInputBuffer();
-                 return;
+        printf(" (DD MM YYYY): "); 
+        if (scanf("%d %d %d", day, month, year) == 3) {
+            if (isValidDate(*day, *month, *year, currentYear)) {
+                clearInputBuffer();
+                return; 
             }
         }
-        printf("Invalid date. Please enter a valid date.\n");
+
+        printf("Invalid date. Please enter a valid date (e.g., 25 12 2004).\n");
         clearInputBuffer();
     }
 }
@@ -102,23 +132,44 @@ float getOptionalFloat(const char* prompt, float min, float max, float defaultVa
         printf("%s", prompt);
         fgets(buffer, sizeof(buffer), stdin);
 
-        // Case 1: User pressed Enter to skip
         if (buffer[0] == '\n') {
             return defaultValue;
         }
 
-        // Case 2: User entered something, try to convert it
         if (sscanf(buffer, "%f", &value) == 1) {
-            // Conversion successful, now check the range
             if (value >= min && value <= max) {
-                return value; // Valid input, return it
+                return value; 
             } else {
-                // Input is a number but out of range
                 printf("Error: Please enter a value between %.2f and %.2f.\n", min, max);
             }
         } else {
-            // Input was not a valid number
             printf("Error: Invalid input. Please enter a number.\n");
         }
     }
+}
+int stricmp_portable(const char* s1, const char* s2) {
+    while (*s1 && (tolower((unsigned char)*s1) == tolower((unsigned char)*s2))) {
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+}
+void getHtmlFilePath(const char* prompt, char* buffer, int size) {
+    // 1. Get a non-empty string from the user first.
+    getString(prompt, buffer, size);
+
+    int len = strlen(buffer);
+
+    // 2. Check if the string already ends with ".html" (case-insensitive).
+    //    We only check if the length is sufficient.
+    if (len > 5 && stricmp_portable(buffer + len - 5, ".html") == 0) {
+        // The path is already valid, so we do nothing.
+        return;
+    }
+
+    // 3. If it doesn't end with .html, append it.
+    //    We use strncat for safety to prevent buffer overflows.
+    strncat(buffer, ".html", size - len - 1);
+
+    printf("  -> Notice: Appended '.html' extension to the filename.\n");
 }

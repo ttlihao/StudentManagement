@@ -2,28 +2,25 @@
 #define STUDENT_CONTROLLER_H
 
 #include "../Model/Student.h"
-#include "../View/StudentView.h"
 
-#define MAX_VIEWS 100
-#define PAGE_SIZE 5
-extern struct Student students[MAX_VIEWS];
-extern struct StudentView views[MAX_VIEWS];
-extern int viewCount;
+// Logic to create a new student
+int handleAddStudent(struct Student newStudent);
 
-void addStudentView();
-void saveStudentViewsToFile(const char* filename);
-void loadStudentViewsFromFile(const char* filename);
-void displayAllStudentViews();
-void deleteStudentView();
-void filterAndSortStudentViews(
-    const char* idKeyword,
-    const char* nameKeyword,
-    const char* majorCode,
-    float minGPA,
-    float maxGPA,
-    const char* sortByField,
-    int sortOrder
+// Logic to find a student
+struct Student* handleFindStudent(const char* id);
+
+// Logic to delete a student
+int handleDelStudent(const char* id);
+
+// Logic to filter and sort students, returns a dynamically allocated array of pointers
+struct Student** handleFilterAndSort(
+    const char* idKeyword, const char* nameKeyword, const char* majorCode,
+    float minGPA, float maxGPA,
+    const char* sortByField, int sortOrder,
+    int* resultCount // Output parameter for the number of results
 );
-void deleteStudent(const char* idKeyword);
+void handleEditStudentSession(const char* studentId);
+// Helper for case-insensitive string search
+const char* stristr(const char* haystack, const char* needle);
 
 #endif

@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;12;0;0;0
-UnitCount=15
+UnitCount=19
 
 [VersionInfo]
 Major=1
@@ -141,19 +141,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=Controller\SubjectController.c
+FileName=Model\MajorModel.c
 CompileCpp=0
-Folder=Controller
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit13]
-FileName=Controller\SubjectController.h
-CompileCpp=0
-Folder=Controller
+Folder=Model
 Compile=1
 Link=1
 Priority=1000
@@ -161,6 +151,26 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
+FileName=Model\StudentModel.c
+CompileCpp=0
+Folder=Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit15]
+FileName=Model\StudentModel.h
+CompileCpp=0
+Folder=Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit10]
 FileName=Extensions\InputHelper.c
 CompileCpp=0
 Folder=Extensions
@@ -170,7 +180,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit11]
 FileName=Extensions\InputHelper.h
 CompileCpp=0
 Folder=Extensions
@@ -180,8 +190,38 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
-FileName=Controller\MajorController.c
+[Unit13]
+FileName=Model\MajorModel.h
+CompileCpp=0
+Folder=Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit16]
+FileName=Model\SubjectModel.c
+CompileCpp=0
+Folder=Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit17]
+FileName=Model\SubjectModel.h
+CompileCpp=0
+Folder=Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit18]
+FileName=Controller\DashboardController.c
 CompileCpp=0
 Folder=Controller
 Compile=1
@@ -190,8 +230,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
-FileName=Controller\MajorController.h
+[Unit19]
+FileName=Controller\DashboardController.h
 CompileCpp=0
 Folder=Controller
 Compile=1

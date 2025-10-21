@@ -1,14 +1,118 @@
 #include <stdio.h>
-#include <stdlib.h> // Required for system("cls") or system("clear")
+#include <stdlib.h>
 #include <string.h>
-#include "Controller/StudentController.h"
-#include "Controller/MajorController.h"
-#include "Controller/SubjectController.h"
-#include "Extensions/InputHelper.h"
+#include <ctype.h>
 
-// Function to display the main menu to the user
+#include "Extensions/InputHelper.h"
+#include "Model/StudentModel.h"
+#include "Model/MajorModel.h"
+#include "Model/SubjectModel.h"
+#include "View/StudentView.h"
+#include "View/DashboardView.h"
+#include "Controller/StudentController.h"
+#include "Controller/DashboardController.h"
+
+void showMessage(const char* message) {
+    printf("\n>> %s <<\n", message);
+}
+
+void pressEnterToContinue() {
+    printf("\nPress Enter to return to the menu...");
+    getchar();
+}
+
+void handleAddNewStudent() {
+    struct Student s;
+    sprintf(s.id, "SV%04d", getNextStudentID());
+    printf("New Student ID: %s\n", s.id);
+
+    getString("Enter Name: ", s.name, 50);
+    getDate("Enter Date of Birth", &s.birthYear, &s.birthMonth, &s.birthDay);
+    getGender("Enter Gender", s.gender, sizeof(s.gender));
+
+    printf("\n--- Select a Major ---\n");
+    struct Major* majors = getAllMajors();
+    int majorCount = getMajorCount();
+    for (int i = 0; i < majorCount; i++) {
+        printf("  %d. %s (%s)\n", i + 1, majors[i].name, majors[i].code);
+    }
+    int choice = getInt("Choose a major: ", 1, majorCount);
+    s.major = majors[choice - 1];
+
+    s.scoreCount = getInt("\nHow many subjects to add scores for? ", 0, MAX_STUDENT_SCORES);
+    struct Subject* allSubjects = getAllSubjects();
+    int totalSubjects = getSubjectCount();
+
+    for (int i = 0; i < s.scoreCount; i++) {
+        printf("\n--- Entering Score for Subject #%d ---\n", i + 1);
+        for(int j=0; j<totalSubjects; j++) {
+            if(strcmp(allSubjects[j].majorCode, s.major.code) == 0) {
+                 printf("  -> Code: %s, Name: %s\n", allSubjects[j].code, allSubjects[j].name);
+            }
+        }
+        char subCode[10];
+        getString("Enter subject code from list above: ", subCode, sizeof(subCode));
+        struct Subject* chosenSub = findSubjectByCode(subCode);
+        if(chosenSub) {
+            s.scores[i].subject = *chosenSub;
+            s.scores[i].value = getFloat("Enter score (0-10): ", 0.0, 10.0);
+        } else {
+            showMessage("Invalid subject code, skipping.");
+            i--; // Retry this score entry
+        }
+    }
+    
+    if (handleAddStudent(s)) {
+        showMessage("Student added successfully!");
+        saveStudents();
+    } else {
+        showMessage("Error: Could not add student.");
+    }
+}
+
+
+
+// This entire function lives in main.c and handles all user input.
+void handleFilterSort() {
+    char id[15] = "", name[50] = "", major[10] = "", sortBy[10] = "";
+    float minG = -1.0, maxG = -1.0;
+
+    printf("\n--- Filter & Sort Options (Press Enter to skip) ---\n");
+    
+    // 1. All "scanf" (getOptionalString, etc.) calls are here in main.c
+    getOptionalString("ID contains: ", id, sizeof(id));
+    getOptionalString("Name contains: ", name, sizeof(name));
+    getOptionalString("Major Code (exact): ", major, sizeof(major));
+    minG = getOptionalFloat("Min GPA: ", 0.0, 4.0, -1.0);
+    maxG = getOptionalFloat("Max GPA: ", 0.0, 4.0, -1.0);
+    getOptionalString("\nSort by (id, name, gpa): ", sortBy, sizeof(sortBy));
+    
+    int sortOrder = 1;
+    if(strlen(sortBy) > 0) {
+        int orderChoice = getInt("Sort Order (1-Asc, 2-Desc): ", 1, 2);
+        if(orderChoice == 2) sortOrder = -1;
+    }
+
+    int resultCount = 0;
+    struct Student** results = handleFilterAndSort(id, name, major, minG, maxG, sortBy, sortOrder, &resultCount);
+	if(results) {
+        struct Student* resultStructs = malloc(resultCount * sizeof(struct Student));
+        for(int i=0; i<resultCount; i++) {
+            resultStructs[i] = *results[i];
+        }
+        displayPaginatedList(resultStructs, resultCount);
+        free(resultStructs);
+        free(results);
+    } else {
+        showMessage("No students match your criteria.");
+    }
+}        
+
+
+
+
 void displayMenu() {
-    system("cls"); // Use "clear" for Linux/macOS, "cls" for Windows
+    system("cls");
     printf("====================================\n");
     printf("    Student Management System\n");
     printf("====================================\n");
@@ -16,119 +120,76 @@ void displayMenu() {
     printf("2. Display All Students\n");
     printf("3. Filter & Sort Students\n");
     printf("4. Delete Student\n");
-    printf("5. Exit\n");
+    printf("5. Edit Student Info\n");
+    printf("6. Dashboard & Statistics\n");
+    printf("7. Export Report to HTML File\n");
+    printf("8. Exit\n");
     printf("------------------------------------\n");
 }
 
-// Helper function to get input for filtering and sorting
-// Helper function to get input for filtering and sorting
-// Helper function to get input for filtering and sorting
-void handleFilterSortInput() {
-    char idKeyword[15] = "";
-    char nameKeyword[50] = "";
-    char majorCode[10] = "";
-    char sortByField[10] = "";
-    float minGPA = -1.0;
-    float maxGPA = -1.0;
-    const float MAX_SYSTEM_GPA = 4.0;
-
-    printf("\n--- Filter & Sort Options ---\n");
-    printf("Enter filter criteria (leave blank by pressing Enter to ignore).\n\n");
-
-    getOptionalString("ID contains: ", idKeyword, sizeof(idKeyword));
-    getOptionalString("Name contains: ", nameKeyword, sizeof(nameKeyword));
-    getOptionalString("Major Code (exact match): ", majorCode, sizeof(majorCode));
-
-    // --- New GPA Logic with Re-entry on Invalid Input ---
-    printf("\nEnter GPA Range (0.0 - 4.0).\n");
-
-    while (1) { // Loop until a valid GPA range is entered
-        // 1. Get both inputs from the user.
-        minGPA = getOptionalFloat("  Minimum GPA: ", 0.0, MAX_SYSTEM_GPA, -1.0);
-        maxGPA = getOptionalFloat("  Maximum GPA: ", 0.0, MAX_SYSTEM_GPA, -1.0);
-
-        // 2. Validate the logic.
-        // This check only runs if BOTH values were actually entered.
-        if (minGPA != -1.0 && maxGPA != -1.0 && minGPA > maxGPA) {
-            // If the range is invalid, print an error and the loop will force re-entry.
-            printf("\n Error: Minimum GPA cannot be greater than Maximum GPA.\n");
-            printf("Please enter the range again.\n\n");
-        } else {
-            // The range is valid (or was skipped), so we can exit the loop.
-            break;
-        }
-    }
-
-    getOptionalString("\nSort by (id, name, or gpa): ", sortByField, sizeof(sortByField));
-    int sortOrder = 1; // Default to ascending (1)
-    if (strlen(sortByField) > 0) { // Only ask for order if a sort field was specified
-        printf("  Sort Order (1-Ascending, 2-Descending): ");
-        int orderChoice = getInt("", 1, 2);
-        if (orderChoice == 2) {
-            sortOrder = -1; // Use -1 to represent descending
-        }
-    }
-    // Call the function with the now-guaranteed valid GPA range.
-    filterAndSortStudentViews(idKeyword, nameKeyword, majorCode, minGPA, maxGPA, sortByField, sortOrder);
-}
-
 int main() {
-    // 1. Initial Data Loading
-    // This block runs only once when the application starts.
-    printf("Loading data from files...\n");
-    loadMajorsFromFile("majors.txt");
-    loadSubjectsFromFile("subjects.txt");
-    loadStudentViewsFromFile("students.txt");
-    printf("Data loading complete.\n\n");
-    printf("Press Enter to start...");
+    printf("Loading data...\n");
+    loadMajors();
+    loadSubjects();
+    loadStudents();
+    printf("Load complete. Press Enter to start...");
     getchar();
 
-
     int choice;
-    while (1) {
+    do {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 5);
+        choice = getInt("Enter your choice: ", 1, 8);
 
         switch (choice) {
-            case 1: // Add New Student
-                printf("\n--- Add New Student ---\n");
-                addStudentView(); // Adds the student to the in-memory array
-
-                // 2. Auto-save the entire student list to the file
-                // This fulfills your requirement to persist data after every addition.
-                saveStudentViewsToFile("students.txt");
-
-                printf("\nPress Enter to return to the menu...");
-                getchar();
+            case 1:
+                handleAddNewStudent();
+                pressEnterToContinue();
                 break;
-
-            case 2: // Display All Students
-                displayAllStudentViews();
-                printf("\nPress Enter to return to the menu...");
-                getchar();
+            case 2:
+                displayPaginatedList(getAllStudents(), getStudentCount());
                 break;
-
-            case 3: // Filter & Sort Students
-                handleFilterSortInput();
-                printf("\nPress Enter to return to the menu...");
-                getchar();
+            case 3:
+                handleFilterSort();
+                pressEnterToContinue();
                 break;
-             case 4: //  Delete Student
-             	deleteStudentView();
-                saveStudentViewsToFile("students.txt"); // ✅ Auto-save after delete  
-                printf("\nPress Enter to return to the menu...");
-                getchar();
+            case 4: {
+                char id[15];
+                getString("Enter student ID to delete: ", id, sizeof(id));
+                if (handleDelStudent(id)) {
+                    showMessage("Student deleted.");
+                    saveStudents();
+                } else {
+                    showMessage("Student not found.");
+                }
+                pressEnterToContinue();
                 break;
-            case 5: // Exit
+            }
+            case 5: { // Edit Student
+                char id[15];
+                getString("Enter Student ID to edit: ", id, sizeof(id));
+                // The controller now handles the entire interactive session
+                handleEditStudentSession(id);
+                pressEnterToContinue();
+                break;
+            }
+            case 6: {
+                struct DashboardStats stats = generateStatistics();
+                displayDashboard(&stats);
+                pressEnterToContinue();
+                break;
+            }
+            case 7: {
+                char path[512];
+                getHtmlFilePath("Enter path to save HTML report: ", path, sizeof(path));
+                exportReportToHtml(path);
+                pressEnterToContinue();
+                break;
+            }
+            case 8:
                 printf("\nExiting program. Goodbye!\n");
-                return 0; // Terminate the program
-
-            default:
-                // This case is unlikely due to the getInt validation, but is good practice.
-                printf("Invalid choice. Please try again.\n");
                 break;
         }
-    }
+    } while (choice != 8);
 
     return 0;
 }

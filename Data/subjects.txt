@@ -1,0 +1,15 @@
+CS101|Introduction to C Programming|3|CS
+SE201|Software Design Principles|4|SE
+GD101|Fundamentals of Design|3|GD
+MKT301|Principles of Marketing|3|MKT
+FIN202|Corporate Finance|3|FIN
+ACC101|Principles of Accounting|3|ACC
+CE201|Statics and Structures|4|CE
+NUR101|Foundations of Nursing|4|NUR
+ME101|Introduction to Mechanics|4|ME
+PSY101|Introduction to Psychology|3|PSY
+EE201|Circuit Theory|4|EE
+IB202|Global Business Management|3|IB
+MA202|Calculus II|4|GEN
+PH105|General Physical Education I|4|GEN
+EN101|English Composition 1|3|GEN

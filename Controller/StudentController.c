@@ -1,339 +1,210 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <strings.h>
-#include "StudentController.h"
-#include "MajorController.h"
-#include "SubjectController.h" 
-#include "../Extensions/InputHelper.h"    
+#include <ctype.h>
+#include "../Controller/StudentController.h"
+#include "../Model/StudentModel.h"
+#include "../Extensions/InputHelper.h"
+#include "../View/StudentView.h"
 
-struct Student students[MAX_VIEWS];
-struct StudentView views[MAX_VIEWS];
-int viewCount = 0;
-static int nextStudentID = 1; 
+int handleAddStudent(struct Student newStudent) {
+    calculateStudentGPA(&newStudent); // Ensure GPA is calculated before adding
+    return addStudent(newStudent);
+}
 
+struct Student* handleFindStudent(const char* id) {
+    return findStudentById(id);
+}
 
-#define PAGE_SIZE 5
+int handleDelStudent(const char* id) {
+    return deleteStudent(id);
+}
 
-static void displayPaginatedViews(struct StudentView viewsToShow[], int count) {
-    if (count == 0) {
-        printf("No students to display.\n");
-        return;
+const char* stristr(const char* haystack, const char* needle) {
+    if (!needle || !*needle) return haystack;
+    while (*haystack) {
+        const char* h = haystack;
+        const char* n = needle;
+        while (*h && *n && (tolower((unsigned char)*h) == tolower((unsigned char)*n))) {
+            h++;
+            n++;
+        }
+        if (!*n) return haystack;
+        haystack++;
     }
-
-    int totalPages = (count + PAGE_SIZE - 1) / PAGE_SIZE;
-    int currentPage = 1;
-    char navInput[20];
-
-    while (1) {
-        system("cls"); // Use "clear" for Linux/macOS
-        printf("\n--- Student List (Page %d of %d | Total: %d students) ---\n\n", currentPage, totalPages, count);
-
-        int startIndex = (currentPage - 1) * PAGE_SIZE;
-        int endIndex = startIndex + PAGE_SIZE;
-        if (endIndex > count) {
-            endIndex = count;
-        }
-
-        for (int i = startIndex; i < endIndex; i++) {
-            displayStudentView(viewsToShow[i]);
-            printf("------------------------------------\n");
-        }
-
-        // Updated navigation menu with the "Jump" option
-        printf("\n[N]ext | [P]rev | [J]ump to Page | [Q]uit to Menu\n");
-        getOptionalString("Enter navigation choice: ", navInput, sizeof(navInput));
-
-        if (strcasecmp(navInput, "n") == 0) {
-            if (currentPage < totalPages) currentPage++;
-        } else if (strcasecmp(navInput, "p") == 0) {
-            if (currentPage > 1) currentPage--;
-        } else if (strcasecmp(navInput, "j") == 0) {
-            // New logic to handle jumping to a specific page
-            // We reuse our robust getInt helper for validated input!
-            int pageToJump = getInt("Enter page number to jump to: ", 1, totalPages);
-            currentPage = pageToJump;
-        } else if (strcasecmp(navInput, "q") == 0) {
-            break; // Exit the pagination loop
-        }
-    }
+    return NULL;
 }
 
 
-void updateNextStudentID() {
-    if (viewCount == 0) {
-        nextStudentID = 1;
-        return;
-    }
-    int maxID = 0;
-    for (int i = 0; i < viewCount; i++) {
-        // Assuming ID format is "SVxxxx"
-        int idNum = atoi(students[i].id + 2); // Skip "SV"
-        if (idNum > maxID) {
-            maxID = idNum;
-        }
-    }
-    nextStudentID = maxID + 1;
-}
-
-// Calculates GPA based on scores and credit hours.
-float calculateGPA(struct Score scores[], int scoreCount) {
-    float totalPoints = 0;
-    int totalCredits = 0;
-
-    if (scoreCount == 0) return 0.0;
-
-    for (int i = 0; i < scoreCount; i++) {
-
-        totalPoints += (scores[i].value / 10.0 * 4.0) * scores[i].subject.creditHours;
-        totalCredits += scores[i].subject.creditHours;
-    }
-
-    return (totalCredits > 0) ? (totalPoints / totalCredits) : 0.0;
-}
-
-
-void addStudentView() {
-    struct Student s;
-
-    // 1. Auto-generate ID
-    sprintf(s.id, "SV%04d", nextStudentID);
-    printf("New Student ID: %s\n", s.id);
-
-    // 2. Get validated inputs using InputHelper
-    getString("Enter Name: ", s.name, 50);
-    getGender("Enter Gender", s.gender, sizeof(s.gender));
-    getDate("Enter Date of Birth", &s.birthYear, &s.birthMonth, &s.birthDay);
-
-    // 3. Choose a major from a list
-    printf("\n--- Select a Major ---\n");
-    for (int i = 0; i < majorCount; i++) {
-        printf("  %d. %s (%s)\n", i + 1, majors[i].name, majors[i].code);
-    }
-    int majorChoice = getInt("Enter your choice: ", 1, majorCount);
-    s.major = majors[majorChoice - 1];
-
-    // 4. Enter scores by choosing subjects from a list
-    printf("\n--- Enter Scores ---\n");
-    s.scoreCount = getInt("How many subjects to add? ", 0, 10);
-
-    for (int i = 0; i < s.scoreCount; i++) {
-        printf("\n--- Subject #%d ---\n", i + 1);
-        for (int j = 0; j < subjectCount; j++) {
-            printf("  %d. %s (%s)\n", j + 1, subjects[j].name, subjects[j].code);
-        }
-        int subjectChoice = getInt("Select subject: ", 1, subjectCount);
-        s.scores[i].subject = subjects[subjectChoice - 1];
-
-        char prompt[100];
-        sprintf(prompt, "Enter score for %s (0-10): ", s.scores[i].subject.code);
-        s.scores[i].value = getFloat(prompt, 0.0, 10.0);
-    }
-
-    // 5. Calculate GPA automatically (removes manual input)
-    s.gpa = calculateGPA(s.scores, s.scoreCount);
-    printf("Calculated GPA: %.2f\n", s.gpa);
-
-
-    // Add to our lists
-    students[viewCount] = s;
-    views[viewCount].student = &students[viewCount];
-    viewCount++;
-    nextStudentID++; // Increment for the next student
-
-    printf("\n✅ Student added successfully!\n");
-}
-
-
-void saveStudentViewsToFile(const char* filename) {
-    FILE* file = fopen(filename, "w");
-    if (!file) {
-        printf("Error opening file for writing.\n");
-        return;
-    }
-
-    for (int i = 0; i < viewCount; i++) {
-        struct Student* s = views[i].student;
-        fprintf(file, "%s|%s|%d|%d|%d|%s|%s|%.2f|", s->id, s->name, s->birthYear, s->birthMonth, s->birthDay, s->gender, s->major.code, s->gpa); // <-- MODIFIED
-        for (int j = 0; j < s->scoreCount; j++) {
-            fprintf(file, "%s,%.2f", s->scores[j].subject.code, s->scores[j].value);
-            if (j < s->scoreCount - 1) fprintf(file, ";");
-        }
-        fprintf(file, "\n");
-    }
-
-    fclose(file);
-    printf("Student data saved to file.\n");
-}
-
-
-void loadStudentViewsFromFile(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        // This is not an error if the file doesn't exist on the first run
-        return;
-    }
-
-    char line[512];
-    viewCount = 0;
-
-    while (fgets(line, sizeof(line), file) && viewCount < MAX_VIEWS) {
-        struct Student* s = &students[viewCount];
-        line[strcspn(line, "\n")] = '\0'; // Remove newline
-
-        // Use strtok for all tokenizing, which is part of the standard library
-        char* token = strtok(line, "|");
-        if (token) strcpy(s->id, token);
-
-        token = strtok(NULL, "|");
-        if (token) strcpy(s->name, token);
-
-        token = strtok(NULL, "|");
-        if (token) s->birthYear = atoi(token);
-
-        token = strtok(NULL, "|");
-        if (token) s->birthMonth = atoi(token);
-
-        token = strtok(NULL, "|");
-        if (token) s->birthDay = atoi(token);
-        token = strtok(NULL, "|"); 
-        if (token) strcpy(s->gender, token);
-
-        // Load Major
-        token = strtok(NULL, "|");
-        if (token) {
-            int majorIndex = findMajorIndex(token);
-            if (majorIndex != -1) s->major = majors[majorIndex];
-        }
-
-        token = strtok(NULL, "|");
-        if (token) s->gpa = atof(token);
-
-        // Load Scores
-        char* scoresData = strtok(NULL, "|");
-        s->scoreCount = 0;
-        if (scoresData) {
-            // Use a different pointer for the inner strtok to avoid conflicts
-            char* scoreToken = strtok(scoresData, ";");
-            while (scoreToken && s->scoreCount < 10) {
-                char subjectCode[10];
-                float value;
-                if (sscanf(scoreToken, "%[^,],%f", subjectCode, &value) == 2) {
-                    int subjectIndex = findSubjectIndex(subjectCode);
-                    if (subjectIndex != -1) {
-                        s->scores[s->scoreCount].subject = subjects[subjectIndex];
-                        s->scores[s->scoreCount].value = value;
-                        s->scoreCount++;
-                    }
-                }
-                scoreToken = strtok(NULL, ";");
-            }
-        }
-
-        views[viewCount].student = s;
-        viewCount++;
-    }
-
-    fclose(file);
-    updateNextStudentID(); // Update the ID counter after loading
-    printf("Student data loaded from file.\n");
-}
-
-
-void displayAllStudentViews() {
-    displayPaginatedViews(views, viewCount);
-}
-
-void filterAndSortStudentViews(
-    const char* idKeyword,
-    const char* nameKeyword,
-    const char* majorCode,
-    float minGPA,
-    float maxGPA,
-    const char* sortByField,
-    int sortOrder // New parameter
+struct Student** handleFilterAndSort(
+    const char* idKeyword, const char* nameKeyword, const char* majorCode,
+    float minGPA, float maxGPA,
+    const char* sortByField, int sortOrder,
+    int* resultCount
 ) {
-    struct StudentView matched[MAX_VIEWS];
+    struct Student* allStudents = getAllStudents();
+    int totalCount = getStudentCount();
+    struct Student* matched[MAX_STUDENTS];
     int matchedCount = 0;
 
-    // --- Filtering logic (remains the same) ---
-    for (int i = 0; i < viewCount; i++) {
-        struct Student* s = views[i].student;
-        if ((idKeyword && strlen(idKeyword) > 0 && !strstr(s->id, idKeyword)) ||
-            (nameKeyword && strlen(nameKeyword) > 0 && !strstr(s->name, nameKeyword)) ||
-            (majorCode && strlen(majorCode) > 0 && strcmp(s->major.code, majorCode) != 0) ||
+    // --- Filtering ---
+    for (int i = 0; i < totalCount; i++) {
+        struct Student* s = &allStudents[i];
+        if ((strlen(idKeyword) > 0 && !stristr(s->id, idKeyword)) ||
+            (strlen(nameKeyword) > 0 && !stristr(s->name, nameKeyword)) ||
+            (strlen(majorCode) > 0 && stricmp_portable(s->major.code, majorCode) != 0) ||
             (minGPA >= 0 && s->gpa < minGPA) ||
             (maxGPA >= 0 && s->gpa > maxGPA)) {
             continue;
         }
-        matched[matchedCount++] = views[i];
+        matched[matchedCount++] = s;
     }
 
-    // --- Sorting logic (updated for sort order) ---
+    // --- Sorting (Bubble Sort for simplicity) ---
     if (strlen(sortByField) > 0 && matchedCount > 1) {
         for (int i = 0; i < matchedCount - 1; i++) {
             for (int j = i + 1; j < matchedCount; j++) {
-                int comparison = 0; // -1 if i<j, 0 if i==j, 1 if i>j
-
-                if (strcmp(sortByField, "gpa") == 0) {
-                    if (matched[i].student->gpa < matched[j].student->gpa) comparison = -1;
-                    else if (matched[i].student->gpa > matched[j].student->gpa) comparison = 1;
-                } else if (strcmp(sortByField, "name") == 0) {
-                    comparison = strcmp(matched[i].student->name, matched[j].student->name);
-                } else if (strcmp(sortByField, "id") == 0) {
-                    comparison = strcmp(matched[i].student->id, matched[j].student->id);
+                int comparison = 0;
+                if (stricmp_portable(sortByField, "gpa") == 0) {
+                    if (matched[i]->gpa < matched[j]->gpa) comparison = -1;
+                    else if (matched[i]->gpa > matched[j]->gpa) comparison = 1;
+                } else if (stricmp_portable(sortByField, "name") == 0) {
+                    comparison = stricmp_portable(matched[i]->name, matched[j]->name);
+                } else { // Default to ID
+                    comparison = stricmp_portable(matched[i]->id, matched[j]->id);
                 }
 
-                // Elegant check: (1 * 1 > 0) -> swap. (-1 * -1 > 0) -> swap.
-                if (comparison * sortOrder > 0) {
-                    struct StudentView temp = matched[i];
+                if (comparison * sortOrder > 0) { // Swap if needed
+                    struct Student* temp = matched[i];
                     matched[i] = matched[j];
                     matched[j] = temp;
                 }
             }
         }
     }
-    
-    // --- Display logic (now calls pagination) ---
-    printf("\nFound %d matching student(s).\n", matchedCount);
-    printf("Press Enter to view results...");
-    getchar();
-    
-    displayPaginatedViews(matched, matchedCount);
-}
-  void deleteStudent() {
-    char id[20];
-    getString("Enter student ID to delete: ", id, sizeof(id));
 
-    int index = findStudentIndex(id);
-    if (index == -1) {
-        printf("Student with ID %s not found.\n", id);
+    // --- Prepare results for returning ---
+    *resultCount = matchedCount;
+    if (matchedCount == 0) return NULL;
+
+    // Allocate memory for an array of POINTERS and copy them
+    struct Student** results = malloc(matchedCount * sizeof(struct Student*));
+    if (!results) {
+        perror("Failed to allocate memory for filter results");
+        *resultCount = 0;
+        return NULL;
+    }
+    for (int i = 0; i < matchedCount; i++) {
+        results[i] = matched[i];
+    }
+    return results;
+}
+static void validateScoresAfterMajorChange(struct Student* s) {
+    struct Score validScores[MAX_STUDENT_SCORES];
+    int validCount = 0;
+    int changesMade = 0;
+
+    for (int i = 0; i < s->scoreCount; i++) {
+        struct Subject currentSubject = s->scores[i].subject;
+        // Keep scores that match the new major code or are "General"
+        if (strcmp(currentSubject.majorCode, s->major.code) == 0 || strcmp(currentSubject.majorCode, "GEN") == 0) {
+            validScores[validCount++] = s->scores[i];
+        } else {
+            // This score is no longer valid, inform the user via the view.
+            char message[256];
+            sprintf(message, "Notice: Subject '%s' removed (invalid for new major '%s').", currentSubject.name, s->major.name);
+            showMessage(message);
+            changesMade = 1;
+        }
+    }
+
+    // Update the student's scores array with only the valid ones
+    s->scoreCount = validCount;
+    for (int i = 0; i < validCount; i++) {
+        s->scores[i] = validScores[i];
+    }
+    
+    if (changesMade) {
+        pressEnterToContinue();
+    }
+}
+
+// Manages the sub-menu for adding, editing, or removing scores.
+static void handleScoreManagementSession(struct Student* s) {
+    while (1) {
+        int choice = displayScoresMenu(s);
+        if (choice == 0) break;
+
+        switch (choice) {
+            case 1: // Add Score
+                if (s->scoreCount >= MAX_STUDENT_SCORES) {
+                    showMessage("Cannot add more scores (maximum reached).");
+                } else {
+                    // The view will prompt user to select a subject and get the score
+                    getNewScoreFromUser(s);
+                }
+                break;
+            case 2: // Edit Score
+                if (s->scoreCount > 0) {
+                    editExistingScore(s); // View function to handle the process
+                }
+                break;
+            case 3: // Remove Score
+                 if (s->scoreCount > 0) {
+                    removeScore(s); // View function to handle the process
+                }
+                break;
+        }
+    }
+    
+    
+}
+
+
+// --- Public Session Function ---
+
+void handleEditStudentSession(const char* studentId) {
+    struct Student* s = findStudentById(studentId);
+    if (!s) {
+        showMessage("Student not found.");
         return;
     }
 
-    for (int i = index; i < viewCount - 1; i++) {
-        students[i] = students[i + 1];
-        views[i].student = &students[i]; 
-    }
-    viewCount--;
+    int changesMade = 0;
+    while (1) {
+        int choice = displayEditMenu(s);
+        if (choice == 0) break;
 
-    printf(" Student deleted successfully.\n");
-
-    saveStudentViewsToFile("students.txt"); 
-}
-
- int findStudentIndex(const char* id) {
-    if (id == NULL || strlen(id) == 0) return -1;
-    for (int i = 0; i < viewCount; i++) {
-        if (strcmp(students[i].id, id) == 0) {
-            return i;
+        changesMade = 1;
+        switch (choice) {
+            case 1: // Edit Name
+                getNewNameFromUser(s->name, sizeof(s->name));
+                break;
+            case 2: // Edit Gender
+                getNewGenderFromUser(s->gender, sizeof(s->gender));
+                break;
+            case 3: // Edit DOB
+                getNewDateFromUser(&s->birthYear, &s->birthMonth, &s->birthDay);
+                break;
+            case 4: { // Edit Major
+                struct Major newMajor = getNewMajorFromUser();
+                s->major = newMajor;
+                validateScoresAfterMajorChange(s);
+                break;
+            }
+            case 5: // Manage Scores
+                handleScoreManagementSession(s);
+                break;
         }
     }
-    return -1;
+
+    if (changesMade) {
+        calculateStudentGPA(s);
+        saveStudents();
+        char message[100];
+        sprintf(message, "Student info updated. New GPA: %.2f", s->gpa);
+        showMessage(message);
+    } else {
+        showMessage("No changes were made.");
+    }
 }
-
-
-
-
-    
-    
