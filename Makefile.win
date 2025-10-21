@@ -4,8 +4,8 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = main.o View/StudentView.o Controller/StudentController.o Controller/MajorController.o Controller/SubjectController.o Extensions/InputHelper.o Controller/DashboardController.o
-LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o Controller/MajorController.o Controller/SubjectController.o Extensions/InputHelper.o Controller/DashboardController.o
+OBJ      = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/StudentModel.o Model/MajorModel.o Model/SubjectModel.o View/DashboardView.o Controller/DashboardController.o
+LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/StudentModel.o Model/MajorModel.o Model/SubjectModel.o View/DashboardView.o Controller/DashboardController.o
 LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -g3
 INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
 CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"
@@ -33,14 +33,20 @@ View/StudentView.o: View/StudentView.c
 Controller/StudentController.o: Controller/StudentController.c
 	$(CC) -c Controller/StudentController.c -o Controller/StudentController.o $(CFLAGS)
 
-Controller/MajorController.o: Controller/MajorController.c
-	$(CC) -c Controller/MajorController.c -o Controller/MajorController.o $(CFLAGS)
-
-Controller/SubjectController.o: Controller/SubjectController.c
-	$(CC) -c Controller/SubjectController.c -o Controller/SubjectController.o $(CFLAGS)
-
 Extensions/InputHelper.o: Extensions/InputHelper.c
 	$(CC) -c Extensions/InputHelper.c -o Extensions/InputHelper.o $(CFLAGS)
+
+Model/StudentModel.o: Model/StudentModel.c
+	$(CC) -c Model/StudentModel.c -o Model/StudentModel.o $(CFLAGS)
+
+Model/MajorModel.o: Model/MajorModel.c
+	$(CC) -c Model/MajorModel.c -o Model/MajorModel.o $(CFLAGS)
+
+Model/SubjectModel.o: Model/SubjectModel.c
+	$(CC) -c Model/SubjectModel.c -o Model/SubjectModel.o $(CFLAGS)
+
+View/DashboardView.o: View/DashboardView.c
+	$(CC) -c View/DashboardView.c -o View/DashboardView.o $(CFLAGS)
 
 Controller/DashboardController.o: Controller/DashboardController.c
 	$(CC) -c Controller/DashboardController.c -o Controller/DashboardController.o $(CFLAGS)

@@ -8,7 +8,6 @@ void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
-
 void getString(const char* prompt, char* buffer, int size) {
     while (1) {
         printf("%s", prompt);

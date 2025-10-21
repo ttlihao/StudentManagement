@@ -3,7 +3,6 @@
 
 // Clears the input buffer.
 void clearInputBuffer();
-
 // Gets a NON-EMPTY string from the user.
 void getString(const char* prompt, char* buffer, int size);
 

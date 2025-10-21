@@ -8,4 +8,4 @@ struct Subject {
     char majorCode[10];
 };
 
-#endif // SUBJECT_H
+#endif 
