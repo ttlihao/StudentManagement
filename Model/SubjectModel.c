@@ -34,6 +34,19 @@ void saveSubjects() {
     fclose(file);
 }
 
+int updateSubject(const char* code, struct Subject updatedInfo) {
+    for (int i = 0; i < subjectCount; i++) {
+        if (strcmp(subjectList[i].code, code) == 0) {
+            // Found the subject, now update its fields
+            strcpy(subjectList[i].name, updatedInfo.name);
+            subjectList[i].creditHours = updatedInfo.creditHours;
+            strcpy(subjectList[i].majorCode, updatedInfo.majorCode);
+            return 1; // Success
+        }
+    }
+    return 0; // Not found
+}
+
 struct Subject* getAllSubjects() { return subjectList; }
 int getSubjectCount() { return subjectCount; }
 
@@ -44,4 +57,35 @@ struct Subject* findSubjectByCode(const char* code) {
         }
     }
     return NULL;
+}
+
+// Add these new functions to Sources/SubjectModel.c
+
+int addSubject(struct Subject newSubject) {
+    if (subjectCount >= MAX_SUBJECTS) {
+        return 0; // List is full
+    }
+    subjectList[subjectCount++] = newSubject;
+    return 1; // Success
+}
+
+int deleteSubject(const char* code) {
+    int index = -1;
+    for (int i = 0; i < subjectCount; i++) {
+        if (strcmp(subjectList[i].code, code) == 0) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) {
+        return 0; // Not found
+    }
+
+    // Shift elements to fill the gap
+    for (int i = index; i < subjectCount - 1; i++) {
+        subjectList[i] = subjectList[i + 1];
+    }
+    subjectCount--;
+    return 1; // Success
 }

@@ -13,3 +13,4 @@ IB202|Global Business Management|3|IB
 MA202|Calculus II|4|GEN
 PH105|General Physical Education I|4|GEN
 EN101|English Composition 1|3|GEN
+EXE101|Experiential Entrepreneurship 1|5|GEN

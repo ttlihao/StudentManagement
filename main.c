@@ -9,8 +9,27 @@
 #include "Model/SubjectModel.h"
 #include "View/StudentView.h"
 #include "View/DashboardView.h"
+#include "View/SubjectView.h"
 #include "Controller/StudentController.h"
+#include "Controller/SubjectController.h"
 #include "Controller/DashboardController.h"
+
+static int getConfirmation(const char* prompt) {
+    char buffer[10];
+    while(1) {
+        // We use getString from InputHelper to ensure non-empty input
+        getString(prompt, buffer, sizeof(buffer)); 
+        
+        // stricmp_portable from InputHelper handles case-insensitivity (Y/y)
+        if (stricmp_portable(buffer, "y") == 0 || stricmp_portable(buffer, "yes") == 0) {
+            return 1; // User confirmed
+        }
+        if (stricmp_portable(buffer, "n") == 0 || stricmp_portable(buffer, "no") == 0) {
+            return 0; // User denied
+        }
+        printf("Invalid input. Please enter 'y' or 'n'.\n");
+    }
+}
 
 void showMessage(const char* message) {
     printf("\n>> %s <<\n", message);
@@ -122,11 +141,86 @@ void displayMenu() {
     printf("4. Delete Student\n");
     printf("5. Edit Student Info\n");
     printf("6. Dashboard & Statistics\n");
-    printf("7. Export Report to HTML File\n");
-    printf("8. Exit\n");
+    printf("7. Manage Subjects\n"); 
+    printf("8. Export Report to HTML File\n"); 
+    printf("9. Exit\n"); 
     printf("------------------------------------\n");
 }
 
+static void runSubjectManagementSession() {
+    int choice;
+    do {
+        choice = displaySubjectMenu(); 
+
+        switch (choice) {
+            case 1: {
+                struct Subject newSubject;
+                if (getNewSubjectInfo(&newSubject)) { 
+                    int result = handleAddSubject(newSubject); 
+                    if (result == 1) {
+                        showMessage("Subject added successfully.");
+                        saveSubjects(); // Model saves data
+                    } else {
+                        showMessage("Error: Subject code already exists.");
+                    }
+                }
+                pressEnterToContinue();
+                break;
+            }
+            case 2: // View All Subjects
+                displaySubjectList(getAllSubjects(), getSubjectCount());
+                pressEnterToContinue();
+                break;
+            case 3: { // Update Subject
+                char code[10];
+                getString("Enter subject code to update: ", code, sizeof(code));
+                
+                // 1. Find the subject via the Model (read-only is acceptable here)
+                const struct Subject* originalSubject = findSubjectByCode(code);
+
+                if (originalSubject) {
+                    // 2. The View gets the new data into a temporary struct
+                    struct Subject updatedInfo;
+                    getUpdatedSubjectInfo(originalSubject, &updatedInfo);
+                    
+                    // 3. The Controller handles the update logic
+                    if (handleUpdateSubject(code, updatedInfo)) {
+                        showMessage("Subject updated successfully.");
+                        saveSubjects();
+                    } else {
+                        // This case shouldn't be hit if find works, but it's safe to have
+                        showMessage("Error: Failed to update subject.");
+                    }
+                } else {
+                    showMessage("Subject not found.");
+                }
+                pressEnterToContinue();
+                break;
+            }
+            case 4: { // Delete Subject
+                char code[10];
+                getString("Enter subject code to delete: ", code, sizeof(code));
+                if (findSubjectByCode(code)) {
+                     if (getConfirmation("Are you sure? (y/n): ")) {
+                        if(handleDeleteSubject(code)) {
+                            showMessage("Subject deleted successfully.");
+                            saveSubjects();
+                        }
+                     } else {
+                        showMessage("Deletion cancelled.");
+                     }
+                } else {
+                    showMessage("Subject not found.");
+                }
+                pressEnterToContinue();
+                break;
+            }
+            case 0:
+                // Return to main menu
+                break;
+        }
+    } while (choice != 0);
+}
 int main() {
     printf("Loading data...\n");
     loadMajors();
@@ -138,7 +232,7 @@ int main() {
     int choice;
     do {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 8);
+        choice = getInt("Enter your choice: ", 1, 9);
 
         switch (choice) {
             case 1:
@@ -178,18 +272,21 @@ int main() {
                 pressEnterToContinue();
                 break;
             }
-            case 7: {
+            case 7:
+                runSubjectManagementSession();
+                break;
+            case 8: {
                 char path[512];
                 getHtmlFilePath("Enter path to save HTML report: ", path, sizeof(path));
                 exportReportToHtml(path);
                 pressEnterToContinue();
                 break;
             }
-            case 8:
+            case 9:
                 printf("\nExiting program. Goodbye!\n");
                 break;
         }
-    } while (choice != 8);
+    } while (choice != 9);
 
     return 0;
 }
