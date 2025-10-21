@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;12;0;0;0
-UnitCount=19
+UnitCount=21
 
 [VersionInfo]
 Major=1
@@ -234,6 +234,26 @@ BuildCmd=
 FileName=Controller\DashboardController.h
 CompileCpp=0
 Folder=Controller
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit20]
+FileName=View\DashboardView.c
+CompileCpp=0
+Folder=View
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit21]
+FileName=View\DashboardView.h
+CompileCpp=0
+Folder=View
 Compile=1
 Link=1
 Priority=1000
