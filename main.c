@@ -10,9 +10,15 @@
 #include "View/StudentView.h"
 #include "View/DashboardView.h"
 #include "View/SubjectView.h"
-#include "Controller/StudentController.h"
-#include "Controller/SubjectController.h"
-#include "Controller/DashboardController.h"
+/*ADD THIS CODE*/
+ #include "View/MajorView.h" // Include the header for Major View functions
+ /*END NEW CODE*/
+ #include "Controller/StudentController.h"
+ #include "Controller/SubjectController.h"
+ #include "Controller/DashboardController.h"
+ /*ADD THIS CODE*/
+ #include "Controller/MajorController.h" // Include the header for Major Controller functions
+ /*END NEW CODE*/
 
 static int getConfirmation(const char* prompt) {
     char buffer[10];
@@ -142,8 +148,11 @@ void displayMenu() {
     printf("5. Edit Student Info\n");
     printf("6. Dashboard & Statistics\n");
     printf("7. Manage Subjects\n"); 
-    printf("8. Export Report to HTML File\n"); 
-    printf("9. Exit\n"); 
+	/*ADD THIS CODE*/
+    printf("8. Manage Majors\n"); // Add new menu option here
+    /*END NEW CODE*/
+    printf("9. Export Report to HTML File\n");
+    printf("0. Exit\n"); 
     printf("------------------------------------\n");
 }
 
@@ -221,6 +230,82 @@ static void runSubjectManagementSession() {
         }
     } while (choice != 0);
 }
+/*ADD THIS CODE*/
+ /**
+  * @brief Runs the Major Management sub-menu loop.
+  * Handles user interaction for adding, viewing, updating (students), and deleting majors.
+  */
+ static void runMajorManagementSession() {
+     int choice;
+     do {
+         // Display the major-specific menu (function defined in MajorView.c)
+         choice = displayMajorMenu();
+
+         switch (choice) {
+             case 1: { // Add New Major
+                 struct Major newMajor;
+                 // Prompt user for Code and Name using InputHelper functions
+                 getString("Enter new Major Code (e.g., IT, CS - will be stored as entered): ", newMajor.code, sizeof(newMajor.code));
+                 // Note: Uppercase conversion is not automatically handled here, add if required.
+                 getString("Enter new Major Name: ", newMajor.name, sizeof(newMajor.name));
+
+                 // Call the controller function to handle the addition logic (includes duplicate check)
+                 if (handleAddMajor(newMajor)) {
+                     saveMajors(); // Persist the changes to the majors file via Model
+                     showMessage("Major added successfully.");
+                 } else {
+                     showMessage("Error: Major code already exists or the major list is full.");
+                 }
+                 pressEnterToContinue(); // Wait for user acknowledgment
+                 break;
+             }
+             case 2: // View All Majors
+                 // Call the view function to display the formatted list
+                 displayMajorList(); // Function defined in MajorView.c
+                 pressEnterToContinue(); // Wait for user acknowledgment
+                 break;
+             case 3: // Update Major Info (Add/Remove Student)
+                 // Call the view function that handles the interaction for this specific task
+                 handleUpdateMajorStudents(); // Function defined in MajorView.c
+                 // Note: saveStudents() is called within the relevant Controller functions
+                 pressEnterToContinue(); // Wait for user acknowledgment
+                 break;
+             case 4: { // Delete Major
+                 char codeToDelete[10];
+                 // Prompt user for the code of the major to delete
+                 getString("Enter Major Code to delete: ", codeToDelete, sizeof(codeToDelete));
+                 // Optional: Convert codeToDelete to uppercase if codes are consistently uppercase
+
+                 // First, check if the major actually exists using the controller
+                 if (handleFindMajorByCode(codeToDelete) == NULL) {
+                     showMessage("Error: Major code not found.");
+                 } else {
+                     // If it exists, ask for confirmation
+                     if (getConfirmation("Are you sure? Deleting this major will remove it from all associated students (y/n): ")) {
+                         // If confirmed, call the controller function to handle deletion (updates students too)
+                         if (handleDeleteMajor(codeToDelete)) {
+                             saveMajors(); // Persist the change to the majors file via Model
+                             // saveStudents() is called inside the controller's handleDeleteMajor
+                             showMessage("Major deleted successfully. Associated students have been updated.");
+                         } else {
+                             // This error is less likely if find worked, but possible
+                             showMessage("An error occurred while deleting the major.");
+                         }
+                     } else {
+                         // If user entered 'n' or 'no'
+                         showMessage("Deletion cancelled.");
+                     }
+                 }
+                 pressEnterToContinue(); // Wait for user acknowledgment
+                 break;
+             }
+             case 0:
+                 // Choice 0 means return to the main menu, so do nothing here, the loop will exit.
+                 break;
+         }
+     } while (choice != 0); // Continue loop until user chooses 0
+ }
+ /*END NEW CODE*/
 int main() {
     printf("Loading data...\n");
     loadMajors();
@@ -232,7 +317,7 @@ int main() {
     int choice;
     do {
         displayMenu();
-        choice = getInt("Enter your choice: ", 1, 9);
+        choice = getInt("Enter your choice: ", 0, 9);
 
         switch (choice) {
             case 1:
@@ -275,18 +360,23 @@ int main() {
             case 7:
                 runSubjectManagementSession();
                 break;
-            case 8: {
+			/*ADD THIS CODE*/
+            case 8: // Manage Majors
+                runMajorManagementSession(); // Run the newly added sub-menu loop
+                break;
+            /*END NEW CODE*/
+            case 9: {
                 char path[512];
                 getHtmlFilePath("Enter path to save HTML report: ", path, sizeof(path));
                 exportReportToHtml(path);
                 pressEnterToContinue();
                 break;
             }
-            case 9:
+            case 0:
                 printf("\nExiting program. Goodbye!\n");
                 break;
         }
-    } while (choice != 9);
+    } while (choice != 0);
 
     return 0;
 }
