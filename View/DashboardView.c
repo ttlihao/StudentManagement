@@ -40,15 +40,15 @@ void displayDashboard(const struct DashboardStats* stats) {
     printf("Average Student GPA:      %.2f\n", stats->averageGpa);
 
     printf("\n--- Subject Performance ---\n");
-    printf("%-10s | %-25s | %-8s | %-12s | %-10s\n", "Code", "Subject Name", "Students", "Average Score", "Score Range");
-    printf("-----------+---------------------------+----------+---------------+------------\n");
+    printf("%-10s | %-40s | %-8s | %-13s | %-10s\n", "Code", "Subject Name", "Students", "Average Score", "Score Range");
+    printf("-----------+------------------------------------------+----------+---------------+------------\n");
     for (int i = 0; i < stats->totalSubjects; i++) {
         const struct SubjectStats* s = &stats->subjectStats[i];
         if (s->studentCount > 0) {
             double average = s->totalScore / s->studentCount;
-            printf("%-10s | %-25s | %-8d | %-12.2f | %.2f - %.2f\n", s->subjectCode, s->subjectName, s->studentCount, average, s->minScore, s->maxScore);
+            printf("%-10s | %-40s | %-8d | %-13.2f | %.2f - %.2f\n", s->subjectCode, s->subjectName, s->studentCount, average, s->minScore, s->maxScore);
         } else {
-            printf("%-10s | %-25s | %-8d | %-12s | %s\n", s->subjectCode, s->subjectName, 0, "N/A", "N/A");
+            printf("%-10s | %-40s | %-8d | %-13s | %s\n", s->subjectCode, s->subjectName, 0, "N/A", "N/A");
         }
     }
 
