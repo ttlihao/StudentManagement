@@ -1,4 +1,3 @@
-/*ADD THIS CODE*/
  #ifndef MAJOR_VIEW_H
  #define MAJOR_VIEW_H
 
@@ -27,4 +26,3 @@
  // following the pattern of runSubjectManagementSession().
 
  #endif // MAJOR_VIEW_H
- /*END NEW CODE*/

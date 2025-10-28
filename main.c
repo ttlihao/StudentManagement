@@ -10,15 +10,11 @@
 #include "View/StudentView.h"
 #include "View/DashboardView.h"
 #include "View/SubjectView.h"
-/*ADD THIS CODE*/
- #include "View/MajorView.h" // Include the header for Major View functions
- /*END NEW CODE*/
- #include "Controller/StudentController.h"
- #include "Controller/SubjectController.h"
- #include "Controller/DashboardController.h"
- /*ADD THIS CODE*/
- #include "Controller/MajorController.h" // Include the header for Major Controller functions
- /*END NEW CODE*/
+#include "View/MajorView.h" 
+#include "Controller/StudentController.h"
+#include "Controller/SubjectController.h"
+#include "Controller/DashboardController.h"
+#include "Controller/MajorController.h" 
 
 static int getConfirmation(const char* prompt) {
     char buffer[10];
@@ -148,9 +144,7 @@ void displayMenu() {
     printf("5. Edit Student Info\n");
     printf("6. Dashboard & Statistics\n");
     printf("7. Manage Subjects\n"); 
-	/*ADD THIS CODE*/
-    printf("8. Manage Majors\n"); // Add new menu option here
-    /*END NEW CODE*/
+    printf("8. Manage Majors\n"); 
     printf("9. Export Report to HTML File\n");
     printf("0. Exit\n"); 
     printf("------------------------------------\n");
@@ -230,11 +224,6 @@ static void runSubjectManagementSession() {
         }
     } while (choice != 0);
 }
-/*ADD THIS CODE*/
- /**
-  * @brief Runs the Major Management sub-menu loop.
-  * Handles user interaction for adding, viewing, updating (students), and deleting majors.
-  */
  static void runMajorManagementSession() {
      int choice;
      do {
@@ -305,7 +294,6 @@ static void runSubjectManagementSession() {
          }
      } while (choice != 0); // Continue loop until user chooses 0
  }
- /*END NEW CODE*/
 int main() {
     printf("Loading data...\n");
     loadMajors();
@@ -360,11 +348,9 @@ int main() {
             case 7:
                 runSubjectManagementSession();
                 break;
-			/*ADD THIS CODE*/
-            case 8: // Manage Majors
-                runMajorManagementSession(); // Run the newly added sub-menu loop
+            case 8: 
+                runMajorManagementSession(); 
                 break;
-            /*END NEW CODE*/
             case 9: {
                 char path[512];
                 getHtmlFilePath("Enter path to save HTML report: ", path, sizeof(path));

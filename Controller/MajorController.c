@@ -1,4 +1,3 @@
-/*ADD THIS CODE*/
  #include "MajorController.h"       // Header for this controller
  #include "../Model/MajorModel.h"   // To interact with major data
  #include "../Model/StudentModel.h" // To interact with student data
@@ -142,4 +141,3 @@
      }
      return 0; // Failure: Student not found
  }
- /*END NEW CODE*/

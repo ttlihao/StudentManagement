@@ -42,14 +42,7 @@ void loadStudents() {
     while (fgets(line, sizeof(line), file) && studentCount < MAX_STUDENTS) {
         struct Student* s = &studentList[studentCount];
         line[strcspn(line, "\n")] = 0;
-        /*ADD THIS CODE*/
-         /**
-          * @brief Initialize the student's major to NO_MAJOR before parsing.
-          * This ensures a valid default state if the major code is missing or invalid in the file.
-          */
          s->major = NO_MAJOR;
-         /*END NEW CODE*/
-
         char* parts[10] = {0}; // Pointers to parts of the string
         int partCount = 0;
         char* token = strtok(line, "|");

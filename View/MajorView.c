@@ -1,4 +1,3 @@
-/*ADD THIS CODE*/
  #include "MajorView.h"                   // Header for this view's declarations
  #include "../Controller/MajorController.h" // To call controller logic
  #include "../Model/MajorModel.h"         // To get major list
@@ -119,4 +118,3 @@
              break;
      }
  }
- /*END NEW CODE*/
