@@ -16,8 +16,7 @@
      printf("\n--- Manage Majors ---\n");
      printf("1. Add New Major\n");
      printf("2. View All Majors\n");
-     printf("3. Update Major Info (Add/Remove Student)\n");
-     printf("4. Delete Major\n");
+     printf("3. Delete Major\n");
      printf("0. Back to Main Menu\n");
      // Get and return validated user choice between 0 and 4
      return getInt("Enter your choice: ", 0, 4);

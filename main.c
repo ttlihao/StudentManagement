@@ -253,13 +253,7 @@ static void runSubjectManagementSession() {
                  displayMajorList(); // Function defined in MajorView.c
                  pressEnterToContinue(); // Wait for user acknowledgment
                  break;
-             case 3: // Update Major Info (Add/Remove Student)
-                 // Call the view function that handles the interaction for this specific task
-                 handleUpdateMajorStudents(); // Function defined in MajorView.c
-                 // Note: saveStudents() is called within the relevant Controller functions
-                 pressEnterToContinue(); // Wait for user acknowledgment
-                 break;
-             case 4: { // Delete Major
+             case 3: { // Delete Major
                  char codeToDelete[10];
                  // Prompt user for the code of the major to delete
                  getString("Enter Major Code to delete: ", codeToDelete, sizeof(codeToDelete));
