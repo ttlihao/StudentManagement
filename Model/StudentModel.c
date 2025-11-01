@@ -9,6 +9,13 @@
 static struct Student studentList[MAX_STUDENTS];
 static int studentCount = 0;
 static int nextStudentID = 1;
+/*ADD THIS CODE*/
+ /**
+  * @brief Defines the state representing a student having no assigned major.
+  * Uses an empty string for the code and "N/A" for the name.
+  */
+ static const struct Major NO_MAJOR = {"", "N/A"};
+ /*END NEW CODE*/
 
 void updateNextStudentID() {
     if (studentCount == 0) {
@@ -35,7 +42,7 @@ void loadStudents() {
     while (fgets(line, sizeof(line), file) && studentCount < MAX_STUDENTS) {
         struct Student* s = &studentList[studentCount];
         line[strcspn(line, "\n")] = 0;
-
+         s->major = NO_MAJOR;
         char* parts[10] = {0}; // Pointers to parts of the string
         int partCount = 0;
         char* token = strtok(line, "|");

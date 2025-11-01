@@ -4,15 +4,15 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/MajorModel.o Model/StudentModel.o Model/SubjectModel.o Controller/DashboardController.o View/DashboardView.o View/SubjectView.o Controller/SubjectController.o
-LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/MajorModel.o Model/StudentModel.o Model/SubjectModel.o Controller/DashboardController.o View/DashboardView.o View/SubjectView.o Controller/SubjectController.o
-LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -g3
-INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
-CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"
+OBJ      = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/MajorModel.o Model/StudentModel.o Model/SubjectModel.o Controller/DashboardController.o View/DashboardView.o View/SubjectView.o Controller/SubjectController.o View/MajorView.o Controller/MajorController.o
+LINKOBJ  = main.o View/StudentView.o Controller/StudentController.o Extensions/InputHelper.o Model/MajorModel.o Model/StudentModel.o Model/SubjectModel.o Controller/DashboardController.o View/DashboardView.o View/SubjectView.o Controller/SubjectController.o View/MajorView.o Controller/MajorController.o
+LIBS     = -L"C:/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -g3
+INCS     = -I"C:/Dev-Cpp/TDM-GCC-64/include" -I"C:/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+CXXINCS  = -I"C:/Dev-Cpp/TDM-GCC-64/include" -I"C:/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"
 BIN      = Project1.exe
 CXXFLAGS = $(CXXINCS) -g3
 CFLAGS   = $(INCS) -g3
-DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\DevCpp.exe INTERNAL_DEL
+DEL      = C:\Dev-Cpp\DevCpp.exe INTERNAL_DEL
 
 .PHONY: all all-before all-after clean clean-custom
 
@@ -56,3 +56,9 @@ View/SubjectView.o: View/SubjectView.c
 
 Controller/SubjectController.o: Controller/SubjectController.c
 	$(CC) -c Controller/SubjectController.c -o Controller/SubjectController.o $(CFLAGS)
+
+View/MajorView.o: View/MajorView.c
+	$(CC) -c View/MajorView.c -o View/MajorView.o $(CFLAGS)
+
+Controller/MajorController.o: Controller/MajorController.c
+	$(CC) -c Controller/MajorController.c -o Controller/MajorController.o $(CFLAGS)
